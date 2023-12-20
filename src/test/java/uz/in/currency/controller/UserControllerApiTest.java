@@ -113,4 +113,5 @@ public class UserControllerApiTest {
 
         assertThrows(IllegalArgumentException.class, () -> userController.signIn(signInDto));
     }
+
 }

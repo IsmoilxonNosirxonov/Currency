@@ -42,6 +42,7 @@ public class CurrencyServiceImplH2Test {
     private RestTemplate restTemplate;
 
     private CurrencyServiceImpl currencyService;
+
     private static final String CBU_URL = "https://cbu.uz/uz/arkhiv-kursov-valyut/json/";
 
     @Before
