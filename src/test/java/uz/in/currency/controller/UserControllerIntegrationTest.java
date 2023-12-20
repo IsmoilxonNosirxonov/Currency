@@ -2,28 +2,19 @@ package uz.in.currency.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import uz.in.currency.config.JwtService;
 import uz.in.currency.domain.dto.SignInDto;
 import uz.in.currency.domain.dto.UserCreateDto;
-import uz.in.currency.domain.entity.User;
+import uz.in.currency.domain.response.AuthenticationResponse;
 import uz.in.currency.domain.role.UserRole;
-import uz.in.currency.repository.UserRepository;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import uz.in.currency.service.user.UserService;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @SpringBootTest
@@ -34,22 +25,21 @@ public class UserControllerIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
     @Autowired
     private ObjectMapper objectMapper;
-    @Mock
-    private JwtService jwtService;
-    @Mock
-    private AuthenticationManager authenticationManager;
+
+    private static final String API = "http://localhost:8083/api/v1/auth";
 
     @Test
     public void testSignUp() throws Exception {
 
         UserCreateDto createDto =new UserCreateDto("Test", "test@example.com", "password", UserRole.USER);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("http://localhost:8083/api/v1/auth/sign-up")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(createDto)))
+        mockMvc.perform(MockMvcRequestBuilders.post(API+"/sign-up")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(createDto))
+                )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.token").exists())
                 .andDo(print());
@@ -57,28 +47,16 @@ public class UserControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = "ROLE_ADMIN")
     public void testSignIn() throws Exception {
 
-//        when(userService.signIn(any(SignInDto.class)))
-//                .thenReturn(new AuthenticationResponse("mockedToken"));
+        SignInDto signInDto=new SignInDto("test@gmail.com", "test");
+        UserCreateDto createDto =new UserCreateDto("Test", "test@gmail.com", "test", UserRole.USER);
+        AuthenticationResponse save = userService.save(createDto);
 
-        SignInDto signInDto=new SignInDto("test2@gmail.com", "test2");
-        User user=User.builder()
-                .fullName("Test2")
-                .email("test2@gmail.com")
-                .password("test2")
-                .role(UserRole.USER)
-                .build();
-        userRepository.save(user);
 
-        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(mock(Authentication.class));
-        when(jwtService.generateToken(any(User.class))).thenReturn("jwtToken");
-
-        mockMvc.perform(MockMvcRequestBuilders.post("http://localhost:8083/api/v1/auth/sign-in")
+        mockMvc.perform(MockMvcRequestBuilders.post(API + "/sign-in")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(signInDto))
-//                        .header("Bearer ", token)
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.token").exists())
