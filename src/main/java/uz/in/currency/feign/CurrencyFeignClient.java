@@ -1,4 +1,4 @@
-package uz.in.currency.service.currency;
+package uz.in.currency.feign;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;

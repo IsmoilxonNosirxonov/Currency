@@ -18,7 +18,7 @@ import uz.in.currency.domain.dto.CurrencyCreateDto;
 import uz.in.currency.domain.dto.CurrencyReadDto;
 import uz.in.currency.domain.entity.Currency;
 import uz.in.currency.repository.CurrencyRepository;
-import uz.in.currency.service.currency.CurrencyFeignClient;
+import uz.in.currency.feign.CurrencyFeignClient;
 import uz.in.currency.service.currency.CurrencyServiceImpl;
 
 import java.util.List;
@@ -42,6 +42,7 @@ public class CurrencyServiceImplH2Test {
     private RestTemplate restTemplate;
 
     private CurrencyServiceImpl currencyService;
+    private static final String CBU_URL = "https://cbu.uz/uz/arkhiv-kursov-valyut/json/";
 
     @Before
     public void setUp(){
@@ -66,7 +67,7 @@ public class CurrencyServiceImplH2Test {
                 .date("18.12.2023")
                 .build();
 
-        when(restTemplate.getForObject("https://cbu.uz/uz/arkhiv-kursov-valyut/json/",CurrencyCreateDto[].class)).thenReturn(currencyCreateDtos);
+        when(restTemplate.getForObject(CBU_URL,CurrencyCreateDto[].class)).thenReturn(currencyCreateDtos);
 
         String result = currencyService.saveByResTemplate();
         Assert.assertEquals("Success",result);

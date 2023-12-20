@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -56,6 +57,7 @@ public class UserControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = "ROLE_ADMIN")
     public void testSignIn() throws Exception {
 
 //        when(userService.signIn(any(SignInDto.class)))
@@ -75,7 +77,9 @@ public class UserControllerIntegrationTest {
 
         mockMvc.perform(MockMvcRequestBuilders.post("http://localhost:8083/api/v1/auth/sign-in")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(signInDto)))
+                        .content(objectMapper.writeValueAsString(signInDto))
+//                        .header("Bearer ", token)
+                )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.token").exists())
                 .andDo(print());

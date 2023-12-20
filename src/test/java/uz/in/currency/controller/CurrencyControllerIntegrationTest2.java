@@ -12,7 +12,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.client.RestTemplate;
 import uz.in.currency.domain.dto.CurrencyCreateDto;
 import uz.in.currency.repository.CurrencyRepository;
-import uz.in.currency.service.currency.CurrencyFeignClient;
+import uz.in.currency.feign.CurrencyFeignClient;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 

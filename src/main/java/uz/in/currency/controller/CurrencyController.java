@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import uz.in.currency.domain.dto.CurrencyReadDto;
 import uz.in.currency.service.currency.CurrencyService;
@@ -30,6 +31,7 @@ public class CurrencyController {
         return ResponseEntity.ok(currencyService.saveByOpenFeign());
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping("/get-currency-by-code/{code}")
     public ResponseEntity<CurrencyReadDto> getByCode(@PathVariable String code) {
         return ResponseEntity.ok(currencyService.getByCode(code));

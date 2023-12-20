@@ -20,7 +20,7 @@ import uz.in.currency.domain.entity.User;
 import uz.in.currency.domain.response.AuthenticationResponse;
 import uz.in.currency.domain.role.UserRole;
 import uz.in.currency.repository.UserRepository;
-import uz.in.currency.service.mapper.MyMapper;
+import uz.in.currency.mapper.MyMapper;
 import uz.in.currency.service.user.UserServiceImpl;
 import java.time.LocalDateTime;
 import java.util.UUID;

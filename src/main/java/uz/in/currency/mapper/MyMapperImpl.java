@@ -1,4 +1,4 @@
-package uz.in.currency.service.mapper;
+package uz.in.currency.mapper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

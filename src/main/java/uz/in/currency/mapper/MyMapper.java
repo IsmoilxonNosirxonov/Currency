@@ -1,4 +1,4 @@
-package uz.in.currency.service.mapper;
+package uz.in.currency.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

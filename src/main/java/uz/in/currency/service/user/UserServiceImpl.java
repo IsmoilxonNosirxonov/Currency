@@ -15,7 +15,7 @@ import uz.in.currency.domain.exception.DataNotFoundException;
 import uz.in.currency.domain.exception.DublicateValueException;
 import uz.in.currency.domain.response.AuthenticationResponse;
 import uz.in.currency.repository.UserRepository;
-import uz.in.currency.service.mapper.MyMapper;
+import uz.in.currency.mapper.MyMapper;
 
 @Service
 @RequiredArgsConstructor
