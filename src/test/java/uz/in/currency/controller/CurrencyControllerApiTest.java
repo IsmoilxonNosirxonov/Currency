@@ -43,7 +43,7 @@ public class CurrencyControllerApiTest {
     public void saveByResTemplateNegativeTest1(){
         when(currencyService.saveByResTemplate()).thenThrow(CurrencyNotSaveException.class);
 
-        ResponseEntity<String> responseEntity = currencyController.saveByResTemplate();
+        currencyController.saveByResTemplate();
 
         assertThrows(CurrencyNotSaveException.class, () -> currencyController.saveByResTemplate());
     }
@@ -109,7 +109,6 @@ public class CurrencyControllerApiTest {
 
     @Test
     public void getByCcyNegativeTest1(){
-
         when(currencyService.getByCode(anyString())).thenThrow(DataNotFoundException.class);
 
         assertThrows(DataNotFoundException.class, () -> currencyController.getByCode("USD"));
@@ -117,7 +116,6 @@ public class CurrencyControllerApiTest {
 
     @Test
     public void getByCcyNegativeTest2(){
-
         when(currencyService.getByCode(null)).thenThrow(IllegalArgumentException.class);
 
         assertThrows(IllegalArgumentException.class, () -> currencyController.getByCode(null));
@@ -125,13 +123,12 @@ public class CurrencyControllerApiTest {
 
     @Test
     public void getByPagePositiveTest1() {
-
         List<CurrencyReadDto> currencyReadDtos = List.of(new CurrencyReadDto());
 
         Page<CurrencyReadDto> mockedPage = new PageImpl<>(currencyReadDtos);
         Mockito.when(currencyService.getByPage(any(PageRequest.class))).thenReturn(mockedPage);
 
-        ResponseEntity<Page<CurrencyReadDto>> responseEntity = currencyController.getByPage(0, 10, "code");
+        ResponseEntity<Page<CurrencyReadDto>> responseEntity = currencyController.getByPage(0, 10);
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertNotNull(responseEntity.getBody());
@@ -140,23 +137,20 @@ public class CurrencyControllerApiTest {
 
     @Test
     public void getByPageNegativeTest1() {
-
         Mockito.when(currencyService.getByPage(any(PageRequest.class))).thenThrow(IllegalArgumentException.class);
 
-        assertThrows(IllegalArgumentException.class, () -> currencyController.getByPage(-1, 10, "code"));
+        assertThrows(IllegalArgumentException.class, () -> currencyController.getByPage(-1, 10));
     }
 
     @Test
     public void getByPageNegativeTest2() {
-
         Mockito.when(currencyService.getByPage(any(PageRequest.class))).thenThrow(DataNotFoundException.class);
 
-        assertThrows(DataNotFoundException.class, () -> currencyController.getByPage(1, 10, "code"));
+        assertThrows(DataNotFoundException.class, () -> currencyController.getByPage(1, 10));
     }
 
     @Test
     public void getAllPositiveTest1(){
-
         List<CurrencyReadDto> mockedDtoList = List.of(new CurrencyReadDto());
         when(currencyService.getAll()).thenReturn(mockedDtoList);
 

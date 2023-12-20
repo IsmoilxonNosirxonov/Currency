@@ -53,7 +53,6 @@ public class UserServiceImplH2Test {
 
     @Test
     public void testSave(){
-
         UserCreateDto userCreateDto= UserCreateDto.builder()
                 .fullName("Test")
                 .email("test@gmail.com")
@@ -81,7 +80,6 @@ public class UserServiceImplH2Test {
 
     @Test
     public void testSignIn(){
-
         SignInDto signInDto= SignInDto.builder()
                 .email("test2@gmail.com")
                 .password("test")
@@ -102,4 +100,5 @@ public class UserServiceImplH2Test {
         Assert.assertEquals("jwtToken",response.getToken());
         Assert.assertEquals(user.getFullName(),userRepository.findByEmail("test2@gmail.com").get().getFullName());
     }
+
 }

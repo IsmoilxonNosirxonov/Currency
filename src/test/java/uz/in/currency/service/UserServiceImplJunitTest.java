@@ -43,7 +43,6 @@ class UserServiceImplJunitTest {
 
     @Test
     public void testSave() {
-
         UserCreateDto userCreateDto = new UserCreateDto("Test","test@example.com", "password", UserRole.USER);
         when(userRepository.findByEmail(userCreateDto.getEmail())).thenReturn(Optional.empty());
         when(passwordEncoder.encode(userCreateDto.getPassword())).thenReturn("encodedPassword");
@@ -56,7 +55,6 @@ class UserServiceImplJunitTest {
 
     @Test
     public void testSaveDuplicateValue() {
-
         UserCreateDto userCreateDto = new UserCreateDto("Test","test@example.com", "password", UserRole.USER);
         when(userRepository.findByEmail(userCreateDto.getEmail())).thenReturn(Optional.of(new User()));
 
@@ -65,7 +63,6 @@ class UserServiceImplJunitTest {
 
     @Test
     public void testSignIn() {
-
         SignInDto signInDto = new SignInDto("test@example.com", "password");
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(mock(Authentication.class));
         when(userRepository.findByEmail(signInDto.getEmail())).thenReturn(Optional.of(new User()));
@@ -79,11 +76,11 @@ class UserServiceImplJunitTest {
 
     @Test
     public void testSignInDataNotFound() {
-
         SignInDto signInDto = new SignInDto("nonexistent@example.com", "password");
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenThrow(new DataNotFoundException("User not found"));
 
         assertThrows(DataNotFoundException.class, () -> userService.signIn(signInDto));
     }
+
 }

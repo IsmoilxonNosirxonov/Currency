@@ -25,16 +25,16 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CurrencyServiceImpl implements CurrencyService{
 
-    private static final Logger logger= LoggerFactory.getLogger(CurrencyServiceImpl.class);
-
     private final CurrencyRepository currencyRepository;
     private CurrencyFeignClient currencyFeignClient;
+    private static final Logger logger= LoggerFactory.getLogger(CurrencyServiceImpl.class);
 
     @Autowired
     public CurrencyServiceImpl(CurrencyRepository currencyRepository, CurrencyFeignClient currencyFeignClient){
         this.currencyRepository = currencyRepository;
         this.currencyFeignClient=currencyFeignClient;
     }
+
     @Override
     public String saveByResTemplate() {
         logger.info("Entering save() method");
@@ -122,12 +122,18 @@ public class CurrencyServiceImpl implements CurrencyService{
     @Override
     public Page<CurrencyReadDto> getByPage(Pageable pageable) {
         Page<Currency> currencies = currencyRepository.findAll(pageable);
+        if(currencies.isEmpty()){
+            throw new DataNotFoundException("Not found Currencies in database!");
+        }
         return currencies.map(MyMapper::toCurrencyReadDto);
     }
 
     @Override
     public List<CurrencyReadDto> getAll() {
         List<Currency> currencies = currencyRepository.findAll();
+        if (currencies.isEmpty()){
+            throw new DataNotFoundException("Not found Currencies in database!");
+        }
         List<CurrencyReadDto> currencyReadDtos=new ArrayList<>();
         for (Currency currency : currencies) {
             CurrencyReadDto currencyReadDto = MyMapper.INSTANCE.currencyToCurrencyReadDto(currency);

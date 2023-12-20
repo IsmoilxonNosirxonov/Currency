@@ -92,4 +92,5 @@ class CurrencyServiceImplJunitTest {
         assertNotNull(result);
         assertFalse(result.isEmpty());
     }
+
 }

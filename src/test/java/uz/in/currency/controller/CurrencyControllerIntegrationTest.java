@@ -1,129 +1,275 @@
 package uz.in.currency.controller;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import uz.in.currency.config.JwtService;
 import uz.in.currency.domain.dto.CurrencyReadDto;
-import uz.in.currency.domain.entity.Currency;
+import uz.in.currency.domain.entity.User;
+import uz.in.currency.domain.exception.DataNotFoundException;
+import uz.in.currency.domain.role.UserRole;
+import uz.in.currency.repository.UserRepository;
 import uz.in.currency.service.currency.CurrencyService;
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import java.util.UUID;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
-@WebMvcTest(value = CurrencyController.class,includeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = JwtService.class))
+@SpringBootTest
+@AutoConfigureMockMvc
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class CurrencyControllerIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
-    private CurrencyController currencyController;
-
-    @MockBean
     private CurrencyService currencyService;
+    @Autowired
+    private JwtService jwtService;
+    @Autowired
+    private ObjectMapper objectMapper;
+    @Autowired
+    private UserRepository userRepository;
+
+    private static String jwtToken;
 
     @BeforeEach
-    void setup() {
-        this.mockMvc = MockMvcBuilders.standaloneSetup(currencyController).build();
+    public void setUp(){
+        User testUser = new User(UUID.randomUUID(), "Test", "test@gmail.com", "test", UserRole.USER, LocalDateTime.now(), LocalDateTime.now());
+        userRepository.save(testUser);
+
+        jwtToken=jwtService.generateToken(testUser);
     }
 
     @Test
-    public void testSaveByRestTemplate() throws Exception {
+    @WithMockUser(roles = "ADMIN")
+    public void successfullyTestSaveByRestTemplate() throws Exception {
 
-        when(currencyService.saveByResTemplate()).thenReturn("Success");
-
-        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:8083/api/v1/save-all-currencies-by-rest-template"))
+        String contentAsString = mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:8083/api/v1/save-all-currencies-by-rest-template")
+//                        .header("Bearer ", jwtToken)
+                )
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().string("Success"))
+                .andDo(print())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        assertNotNull(contentAsString);
+        assertEquals("Success",contentAsString);
+
+        System.out.println("RESULT "+contentAsString);
+    }
+
+    @Test
+    public void failedTestSaveByRestTemplate() throws Exception {
+
+        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:8083/api/v1/save-all-currencies-by-rest-template")
+                )
+                .andExpect(MockMvcResultMatchers.status().isForbidden())
                 .andDo(print());
     }
 
     @Test
-    public void testSaveByOpenFeign() throws Exception {
+    @WithMockUser(roles = "ADMIN")
+    public void successfullyTestSaveByOpenFeign() throws Exception {
 
-        when(currencyService.saveByOpenFeign()).thenReturn("Success");
-
-        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:8083/api/v1/save-all-currencies-by-open-feign"))
+        String contentAsString = mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:8083/api/v1/save-all-currencies-by-open-feign")
+//                        .header("Bearer ", jwtToken)
+                )
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().string("Success"))
+                .andDo(print())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        assertNotNull(contentAsString);
+        assertEquals("Success",contentAsString);
+
+        System.out.println("RESULT "+contentAsString);
+    }
+
+    @Test
+    public void failedTestSaveByOpenFeign() throws Exception {
+
+        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:8083/api/v1/save-all-currencies-by-open-feign")
+                )
+                .andExpect(MockMvcResultMatchers.status().isForbidden())
                 .andDo(print());
     }
 
     @Test
-    void testGetByCode() throws Exception {
+    void successfullyTestGetByCode() throws Exception {
+        currencyService.saveByOpenFeign();
 
-        when(currencyService.getByCode(anyString())).thenReturn(new CurrencyReadDto());
+        String contentAsString = mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:8083/api/v1/get-currency-by-code/{code}", "840")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + jwtToken))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(print())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        assertNotNull(contentAsString);
+        var currencyReadDto = objectMapper.readValue(contentAsString, new TypeReference<CurrencyReadDto>() {});
+
+        assertNotNull(currencyReadDto);
+        assertEquals("840",currencyReadDto.getCode());
+        assertEquals("USD",currencyReadDto.getCcy());
+
+        System.out.println("RESULT "+objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(currencyReadDto));
+    }
+
+    @Test
+    void failedTestGetByCode() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:8083/api/v1/get-currency-by-code/{code}", "840")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isOk())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + jwtToken))
+                .andExpect(MockMvcResultMatchers.status().isInternalServerError())
+                .andExpect(exceptionResult -> {
+                    assertNotNull(exceptionResult);
+                    assertInstanceOf(DataNotFoundException.class, exceptionResult.getResolvedException());
+                    DataNotFoundException resolvedException = (DataNotFoundException) exceptionResult.getResolvedException();
+                    assertEquals("No Currency found with the provided code: 840" ,resolvedException.getMessage());
+                })
                 .andDo(print());
+
     }
 
     @Test
-    void testGetByCcy() throws Exception{
+    void successfullyTestGetByCcy() throws Exception {
+        currencyService.saveByOpenFeign();
 
-        when(currencyService.getByCcy(anyString())).thenReturn(new CurrencyReadDto());
-
-        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:8083/api/v1/get-currency-by-ccy/{ccy}","USD")
-                        .contentType(MediaType.APPLICATION_JSON))
+        String contentAsString = mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:8083/api/v1/get-currency-by-ccy/{ccy}", "EUR")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andDo(print());
+                .andDo(print())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        assertNotNull(contentAsString);
+        var currencyReadDto = objectMapper.readValue(contentAsString, new TypeReference<CurrencyReadDto>() {});
+
+        assertNotNull(currencyReadDto);
+        assertEquals("EUR",currencyReadDto.getCcy());
+        assertEquals("978",currencyReadDto.getCode());
+
+        System.out.println("RESULT "+objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(currencyReadDto));
     }
 
     @Test
-    void testGetByPage() throws Exception{
+    void failedTestGetByCcy() throws Exception {
 
-        CurrencyReadDto currencyReadDto=CurrencyReadDto.builder()
-                .code("840")
-                .ccy("USD")
-                .ccyNm_RU("Доллар США")
-                .ccyNm_UZ("AQSH dollari")
-                .ccyNm_UZC("АК,Ш Доллари")
-                .ccyNm_EN("US Dollar")
-                .nominal("1")
-                .rate("12377.49")
-                .diff("19.46")
-                .date("18.12.2023")
-                .build();
-        Page<CurrencyReadDto> page=new PageImpl<>(List.of(currencyReadDto));
-        when(currencyService.getByPage(any(Pageable.class))).thenReturn(page);
+        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:8083/api/v1/get-currency-by-ccy/{ccy}", "EUR")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + jwtToken))
+                .andExpect(MockMvcResultMatchers.status().isInternalServerError())
+                .andExpect(exceptionResult -> {
+                    assertNotNull(exceptionResult);
+                    assertInstanceOf(DataNotFoundException.class, exceptionResult.getResolvedException());
+                    DataNotFoundException resolvedException = (DataNotFoundException) exceptionResult.getResolvedException();
+                    assertEquals("No Currency found with the provided ccy: EUR" ,resolvedException.getMessage());
+                })
+                .andDo(print());
+
+    }
+
+    @Test
+    void successfullyTestGetByPage() throws Exception {
+        currencyService.saveByOpenFeign();
+
+        String contentAsString = mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:8083/api/v1/get-currencies-by-page")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .param("page", "1")
+                        .param("size", "10"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(print())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        assertNotNull(contentAsString);
+        var currencyReadDtoPage = objectMapper.readValue(contentAsString, new TypeReference<Page<CurrencyReadDto>>() {});
+
+        assertNotNull(currencyReadDtoPage);
+        assertEquals(75,currencyReadDtoPage.getTotalElements());
+        assertEquals(8,currencyReadDtoPage.getTotalPages());
+
+        System.out.println("RESULT "+objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(currencyReadDtoPage));
+    }
+
+    @Test
+    void failedTestGetByPage() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:8083/api/v1/get-currencies-by-page")
-                        .param("page", "0")
-                        .param("size", "10")
-                        .param("sortBy", "code")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isOk())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .param("page", "1")
+                        .param("size", "10"))
+                .andExpect(MockMvcResultMatchers.status().isInternalServerError())
+                .andExpect(exceptionResult -> {
+                    assertNotNull(exceptionResult);
+                    assertInstanceOf(DataNotFoundException.class, exceptionResult.getResolvedException());
+                    DataNotFoundException resolvedException = (DataNotFoundException) exceptionResult.getResolvedException();
+                    assertEquals("Not found Currencies in database!" ,resolvedException.getMessage());
+                })
                 .andDo(print());
-
     }
 
     @Test
-    void testGetAll() throws Exception{
+    void successfullyTestGetAll() throws Exception {
+        currencyService.saveByOpenFeign();
 
-        List<CurrencyReadDto> currencyReadDtoList=new ArrayList<>();
-        when(currencyService.getAll()).thenReturn(currencyReadDtoList);
+        String contentAsString = mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:8083/api/v1/get-all-currencies")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + jwtToken)
+                )
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(print())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        assertNotNull(contentAsString);
+
+        var currencyReadDtoList = objectMapper.readValue(contentAsString, new TypeReference<List<CurrencyReadDto>>() {});
+
+        assertNotNull(currencyReadDtoList);
+        assertEquals(75,currencyReadDtoList.size());
+
+        System.out.println("RESULT "+objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(currencyReadDtoList));
+    }
+
+    @Test
+    void failedTestGetAll() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:8083/api/v1/get-all-currencies")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isOk())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + jwtToken)
+                )
+                .andExpect(MockMvcResultMatchers.status().isInternalServerError())
+                .andExpect(exceptionResult -> {
+                    assertNotNull(exceptionResult);
+                    assertInstanceOf(DataNotFoundException.class, exceptionResult.getResolvedException());
+                    DataNotFoundException resolvedException = (DataNotFoundException) exceptionResult.getResolvedException();
+                    assertEquals("Not found Currencies in database!" ,resolvedException.getMessage());
+                })
                 .andDo(print());
+
     }
 }
