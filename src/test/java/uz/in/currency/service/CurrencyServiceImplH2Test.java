@@ -17,11 +17,14 @@ import org.springframework.web.client.RestTemplate;
 import uz.in.currency.domain.dto.CurrencyCreateDto;
 import uz.in.currency.domain.dto.CurrencyReadDto;
 import uz.in.currency.domain.entity.Currency;
+import uz.in.currency.domain.exception.DataNotFoundException;
 import uz.in.currency.repository.CurrencyRepository;
 import uz.in.currency.feign.CurrencyFeignClient;
 import uz.in.currency.service.currency.CurrencyServiceImpl;
 import java.util.List;
 import java.util.Objects;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @DataJpaTest
@@ -49,7 +52,7 @@ public class CurrencyServiceImplH2Test {
     }
 
     @Test
-    public void testSaveByResTemplate(){
+    public void successfullyTestSaveByResTemplate(){
 
         CurrencyCreateDto[] currencyCreateDtos=new CurrencyCreateDto[1];
         currencyCreateDtos[0]= CurrencyCreateDto.builder()
@@ -74,7 +77,7 @@ public class CurrencyServiceImplH2Test {
     }
 
     @Test
-    public void testSaveByOpenFeign(){
+    public void successfullyTestSaveByOpenFeign(){
 
         CurrencyCreateDto[] currencyCreateDtos=new CurrencyCreateDto[1];
         currencyCreateDtos[0]=CurrencyCreateDto.builder()
@@ -100,7 +103,7 @@ public class CurrencyServiceImplH2Test {
     }
 
     @Test
-    public void testGetByCode(){
+    public void successfullyTestGetByCode(){
 
         Currency currency=Currency.builder()
                 .id(69L)
@@ -124,7 +127,13 @@ public class CurrencyServiceImplH2Test {
     }
 
     @Test
-    public void testGetByCcy(){
+    public void failedTestGetByCode(){
+
+        assertThrows(DataNotFoundException.class,()->currencyService.getByCode("940"));
+    }
+
+    @Test
+    public void successfullyTestGetByCcy(){
 
         Currency currency=Currency.builder()
                 .id(69L)
@@ -148,7 +157,13 @@ public class CurrencyServiceImplH2Test {
     }
 
     @Test
-    public void testGetByPage(){
+    public void failedTestGetByCcy(){
+
+        assertThrows(DataNotFoundException.class,()->currencyService.getByCcy("USD"));
+    }
+
+    @Test
+    public void successfullyTestGetByPage(){
 
         Currency currency1=Currency.builder()
                 .id(69L)
@@ -189,7 +204,14 @@ public class CurrencyServiceImplH2Test {
     }
 
     @Test
-    public void testGetAll(){
+    public void failedTestGetByPage(){
+
+        Pageable pageable=PageRequest.of(0,2);
+        assertThrows(DataNotFoundException.class,()->currencyService.getByPage(pageable));
+    }
+
+    @Test
+    public void successfullyTestGetAll(){
 
         Currency currency1=Currency.builder()
                 .id(69L)
@@ -226,5 +248,11 @@ public class CurrencyServiceImplH2Test {
 
         Assert.assertEquals(2,currencyReadDtos.size());
         Assert.assertTrue(currencyReadDtos.stream().allMatch((item->item instanceof CurrencyReadDto)));
+    }
+
+    @Test
+    public void failedTestGetAll(){
+
+        assertThrows(DataNotFoundException.class,()->currencyService.getAll());
     }
 }
