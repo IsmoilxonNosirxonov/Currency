@@ -17,17 +17,21 @@ import org.springframework.web.client.RestTemplate;
 import uz.in.currency.domain.dto.CurrencyCreateDto;
 import uz.in.currency.domain.dto.CurrencyReadDto;
 import uz.in.currency.domain.entity.Currency;
+import uz.in.currency.domain.exception.DataNotFoundException;
 import uz.in.currency.repository.CurrencyRepository;
 import uz.in.currency.feign.CurrencyFeignClient;
 import uz.in.currency.service.currency.CurrencyServiceImpl;
+
 import java.util.List;
 import java.util.Objects;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @DataJpaTest
 @RunWith(SpringRunner.class)
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class CurrencyServiceImplH2Test {
+public class CurrencyServiceImplJunitTestV2 {
 
     @Autowired
     private TestEntityManager entityManager;
@@ -44,15 +48,15 @@ public class CurrencyServiceImplH2Test {
     private static final String CBU_URL = "https://cbu.uz/uz/arkhiv-kursov-valyut/json/";
 
     @Before
-    public void setUp(){
-        currencyService=new CurrencyServiceImpl(currencyRepository,currencyFeignClient);
+    public void setUp() {
+        currencyService = new CurrencyServiceImpl(currencyRepository, currencyFeignClient);
     }
 
     @Test
-    public void testSaveByResTemplate(){
+    public void successfullyTestSaveByResTemplate() {
 
-        CurrencyCreateDto[] currencyCreateDtos=new CurrencyCreateDto[1];
-        currencyCreateDtos[0]= CurrencyCreateDto.builder()
+        CurrencyCreateDto[] currencyCreateDtos = new CurrencyCreateDto[1];
+        currencyCreateDtos[0] = CurrencyCreateDto.builder()
                 .id(21L)
                 .code("978")
                 .ccy("EUR")
@@ -66,18 +70,18 @@ public class CurrencyServiceImplH2Test {
                 .date("18.12.2023")
                 .build();
 
-        when(restTemplate.getForObject(CBU_URL,CurrencyCreateDto[].class)).thenReturn(currencyCreateDtos);
+        when(restTemplate.getForObject(CBU_URL, CurrencyCreateDto[].class)).thenReturn(currencyCreateDtos);
 
         String result = currencyService.saveByResTemplate();
-        Assert.assertEquals("Success",result);
-        Assert.assertEquals(currencyCreateDtos[0].getCode(),currencyRepository.findByCode("978").get().getCode());
+        Assert.assertEquals("Success", result);
+        Assert.assertEquals(currencyCreateDtos[0].getCode(), currencyRepository.findByCode("978").get().getCode());
     }
 
     @Test
-    public void testSaveByOpenFeign(){
+    public void successfullyestSaveByOpenFeign() {
 
-        CurrencyCreateDto[] currencyCreateDtos=new CurrencyCreateDto[1];
-        currencyCreateDtos[0]=CurrencyCreateDto.builder()
+        CurrencyCreateDto[] currencyCreateDtos = new CurrencyCreateDto[1];
+        currencyCreateDtos[0] = CurrencyCreateDto.builder()
                 .id(69L)
                 .code("840")
                 .ccy("USD")
@@ -95,14 +99,14 @@ public class CurrencyServiceImplH2Test {
 
         System.out.println(entityManager.getEntityManager());
         String result = currencyService.saveByOpenFeign();
-        Assert.assertEquals("Success",result);
-        Assert.assertEquals(currencyCreateDtos[0].getCode(),currencyRepository.findByCode("840").get().getCode());
+        Assert.assertEquals("Success", result);
+        Assert.assertEquals(currencyCreateDtos[0].getCode(), currencyRepository.findByCode("840").get().getCode());
     }
 
     @Test
-    public void testGetByCode(){
+    public void successfullyTestGetByCode() {
 
-        Currency currency=Currency.builder()
+        Currency currency = Currency.builder()
                 .id(69L)
                 .code("840")
                 .ccy("USD")
@@ -120,13 +124,28 @@ public class CurrencyServiceImplH2Test {
         entityManager.flush();
 
         CurrencyReadDto currencyReadDto = currencyService.getByCode("840");
-        Assert.assertEquals(currencyReadDto.getCcyNm_RU(),currency.getCcyNm_RU());
+
+        assertEquals(currency.getCode(), currencyReadDto.getCode());
+        assertEquals(currency.getCcy(), currencyReadDto.getCcy());
+        assertEquals(currency.getCcyNm_RU(), currencyReadDto.getCcyNm_RU());
+        assertEquals(currency.getCcyNm_UZ(), currencyReadDto.getCcyNm_UZ());
+        assertEquals(currency.getCcyNm_UZC(), currencyReadDto.getCcyNm_UZC());
+        assertEquals(currency.getCcyNm_EN(), currencyReadDto.getCcyNm_EN());
+        assertEquals(currency.getNominal(), currencyReadDto.getNominal());
+        assertEquals(currency.getRate(), currencyReadDto.getRate());
+        assertEquals(currency.getRate(), currencyReadDto.getRate());
+        assertEquals(currency.getDiff(), currencyReadDto.getDiff());
+        assertEquals(currency.getDate(), currencyReadDto.getDate());
     }
 
     @Test
-    public void testGetByCcy(){
+    public void failedTestGetByCode() {
+        assertThrows(DataNotFoundException.class, () -> currencyService.getByCode("940"));
+    }
 
-        Currency currency=Currency.builder()
+    @Test
+    public void successfullyTestGetByCcy() {
+        Currency currency = Currency.builder()
                 .id(69L)
                 .code("840")
                 .ccy("USD")
@@ -144,13 +163,30 @@ public class CurrencyServiceImplH2Test {
         entityManager.flush();
 
         CurrencyReadDto currencyReadDto = currencyService.getByCcy("USD");
-        Assert.assertEquals(currencyReadDto.getCcyNm_UZ(),currency.getCcyNm_UZ());
+
+        assertEquals(currency.getCode(), currencyReadDto.getCode());
+        assertEquals(currency.getCcy(), currencyReadDto.getCcy());
+        assertEquals(currency.getCcyNm_RU(), currencyReadDto.getCcyNm_RU());
+        assertEquals(currency.getCcyNm_UZ(), currencyReadDto.getCcyNm_UZ());
+        assertEquals(currency.getCcyNm_UZC(), currencyReadDto.getCcyNm_UZC());
+        assertEquals(currency.getCcyNm_EN(), currencyReadDto.getCcyNm_EN());
+        assertEquals(currency.getNominal(), currencyReadDto.getNominal());
+        assertEquals(currency.getRate(), currencyReadDto.getRate());
+        assertEquals(currency.getRate(), currencyReadDto.getRate());
+        assertEquals(currency.getDiff(), currencyReadDto.getDiff());
+        assertEquals(currency.getDate(), currencyReadDto.getDate());
     }
 
     @Test
-    public void testGetByPage(){
+    public void failedTestGetByCcy() {
 
-        Currency currency1=Currency.builder()
+        assertThrows(DataNotFoundException.class, () -> currencyService.getByCcy("USD"));
+    }
+
+    @Test
+    public void successfullyTestGetByPage() {
+
+        Currency currency1 = Currency.builder()
                 .id(69L)
                 .code("840")
                 .ccy("USD")
@@ -163,7 +199,7 @@ public class CurrencyServiceImplH2Test {
                 .diff("19.46")
                 .date("18.12.2023")
                 .build();
-        Currency currency2=Currency.builder()
+        Currency currency2 = Currency.builder()
                 .id(21L)
                 .code("978")
                 .ccy("EUR")
@@ -181,17 +217,27 @@ public class CurrencyServiceImplH2Test {
         entityManager.persist(currency2);
         entityManager.flush();
 
-        Pageable pageable=PageRequest.of(0,2);
+        Pageable pageable = PageRequest.of(0, 2);
         Page<CurrencyReadDto> resultPage = currencyService.getByPage(pageable);
 
-        Assert.assertEquals(2,resultPage.getTotalElements());
         Assert.assertTrue(resultPage.getContent().stream().allMatch(Objects::nonNull));
+        Assert.assertEquals(2, resultPage.getTotalElements());
+        Assert.assertEquals(1, resultPage.getTotalPages());
+        Assert.assertEquals(2, resultPage.getNumberOfElements());
+        Assert.assertEquals(0, resultPage.getNumber());
     }
 
     @Test
-    public void testGetAll(){
+    public void failedTestGetByPage() {
 
-        Currency currency1=Currency.builder()
+        Pageable pageable = PageRequest.of(0, 2);
+        assertThrows(DataNotFoundException.class, () -> currencyService.getByPage(pageable));
+    }
+
+    @Test
+    public void successfullyTestGetAll() {
+
+        Currency currency1 = Currency.builder()
                 .id(69L)
                 .code("840")
                 .ccy("USD")
@@ -204,7 +250,7 @@ public class CurrencyServiceImplH2Test {
                 .diff("19.46")
                 .date("18.12.2023")
                 .build();
-        Currency currency2=Currency.builder()
+        Currency currency2 = Currency.builder()
                 .id(21L)
                 .code("978")
                 .ccy("EUR")
@@ -224,7 +270,16 @@ public class CurrencyServiceImplH2Test {
 
         List<CurrencyReadDto> currencyReadDtos = currencyService.getAll();
 
-        Assert.assertEquals(2,currencyReadDtos.size());
-        Assert.assertTrue(currencyReadDtos.stream().allMatch((item->item instanceof CurrencyReadDto)));
+        Assert.assertTrue(currencyReadDtos.stream().allMatch((Objects::nonNull)));
+        Assert.assertFalse(currencyReadDtos.isEmpty());
+        Assert.assertEquals(2, currencyReadDtos.size());
+        Assert.assertEquals("840", currencyReadDtos.get(1).getCode());
+        Assert.assertEquals("978", currencyReadDtos.get(0).getCode());
+    }
+
+    @Test
+    public void failedTestGetAll() {
+
+        assertThrows(DataNotFoundException.class, () -> currencyService.getAll());
     }
 }

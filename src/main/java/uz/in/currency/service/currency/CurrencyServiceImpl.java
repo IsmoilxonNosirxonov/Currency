@@ -17,22 +17,23 @@ import uz.in.currency.domain.exception.DataNotFoundException;
 import uz.in.currency.feign.CurrencyFeignClient;
 import uz.in.currency.repository.CurrencyRepository;
 import uz.in.currency.mapper.MyMapper;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class CurrencyServiceImpl implements CurrencyService{
+public class CurrencyServiceImpl implements CurrencyService {
 
     private final CurrencyRepository currencyRepository;
     private CurrencyFeignClient currencyFeignClient;
-    private static final Logger logger= LoggerFactory.getLogger(CurrencyServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(CurrencyServiceImpl.class);
 
     @Autowired
-    public CurrencyServiceImpl(CurrencyRepository currencyRepository, CurrencyFeignClient currencyFeignClient){
+    public CurrencyServiceImpl(CurrencyRepository currencyRepository, CurrencyFeignClient currencyFeignClient) {
         this.currencyRepository = currencyRepository;
-        this.currencyFeignClient=currencyFeignClient;
+        this.currencyFeignClient = currencyFeignClient;
     }
 
     @Override
@@ -47,7 +48,7 @@ public class CurrencyServiceImpl implements CurrencyService{
 
         CurrencyCreateDto[] currencyCreateDtos = restTemplate.getForObject(url, CurrencyCreateDto[].class);
 
-        if (!currencyRepository.findAll().isEmpty()){
+        if (!currencyRepository.findAll().isEmpty()) {
             logger.debug("Found existing currencies, will delete them");
             currencyRepository.deleteAll();
         }
@@ -57,7 +58,7 @@ public class CurrencyServiceImpl implements CurrencyService{
                 Currency currency = MyMapper.INSTANCE.currencyCreateDtoToCurrency(currencyCreateDto);
                 Currency save = currencyRepository.save(currency);
             }
-        }else {
+        } else {
             String errorMessage = "No data found with the provided url: " + url;
             logger.error(errorMessage);
             throw new CurrencyNotSaveException(errorMessage);
@@ -72,7 +73,7 @@ public class CurrencyServiceImpl implements CurrencyService{
 
         CurrencyCreateDto[] currencyCreateDtos = currencyFeignClient.getCurrencies();
 
-        if (!currencyRepository.findAll().isEmpty()){
+        if (!currencyRepository.findAll().isEmpty()) {
             logger.debug("Found existing currencies, will delete them");
             currencyRepository.deleteAll();
         }
@@ -82,7 +83,7 @@ public class CurrencyServiceImpl implements CurrencyService{
                 Currency currency = MyMapper.INSTANCE.currencyCreateDtoToCurrency(currencyCreateDto);
                 Currency save = currencyRepository.save(currency);
             }
-        }else {
+        } else {
             String errorMessage = "No data found with the provided url: " + "https://cbu.uz/uz/arkhiv-kursov-valyut/json/";
             logger.error(errorMessage);
             throw new CurrencyNotSaveException(errorMessage);
@@ -95,10 +96,10 @@ public class CurrencyServiceImpl implements CurrencyService{
     public CurrencyReadDto getByCode(String code) {
         logger.info("Entering getByCode() method with code: {}", code);
         Optional<Currency> optional = currencyRepository.findByCode(code);
-        if(optional.isPresent()){
+        if (optional.isPresent()) {
             logger.info("Exiting getByCode() method");
             return MyMapper.INSTANCE.currencyToCurrencyReadDto(optional.get());
-        }else {
+        } else {
             String errorMessage = "No Currency found with the provided code: " + code;
             logger.error(errorMessage);
             throw new DataNotFoundException(errorMessage);
@@ -109,10 +110,10 @@ public class CurrencyServiceImpl implements CurrencyService{
     public CurrencyReadDto getByCcy(String ccy) {
         logger.info("Entering getByCcy() method with ccy: {}", ccy);
         Optional<Currency> optional = currencyRepository.findByCcy(ccy);
-        if(optional.isPresent()){
+        if (optional.isPresent()) {
             logger.info("Exiting getByCcy() method");
             return MyMapper.INSTANCE.currencyToCurrencyReadDto(optional.get());
-        }else {
+        } else {
             String errorMessage = "No Currency found with the provided ccy: " + ccy;
             logger.error(errorMessage);
             throw new DataNotFoundException(errorMessage);
@@ -122,7 +123,7 @@ public class CurrencyServiceImpl implements CurrencyService{
     @Override
     public Page<CurrencyReadDto> getByPage(Pageable pageable) {
         Page<Currency> currencies = currencyRepository.findAll(pageable);
-        if(currencies.isEmpty()){
+        if (currencies.isEmpty()) {
             throw new DataNotFoundException("Not found Currencies in database!");
         }
         return currencies.map(MyMapper::toCurrencyReadDto);
@@ -131,10 +132,10 @@ public class CurrencyServiceImpl implements CurrencyService{
     @Override
     public List<CurrencyReadDto> getAll() {
         List<Currency> currencies = currencyRepository.findAll();
-        if (currencies.isEmpty()){
+        if (currencies.isEmpty()) {
             throw new DataNotFoundException("Not found Currencies in database!");
         }
-        List<CurrencyReadDto> currencyReadDtos=new ArrayList<>();
+        List<CurrencyReadDto> currencyReadDtos = new ArrayList<>();
         for (Currency currency : currencies) {
             CurrencyReadDto currencyReadDto = MyMapper.INSTANCE.currencyToCurrencyReadDto(currency);
             currencyReadDtos.add(currencyReadDto);

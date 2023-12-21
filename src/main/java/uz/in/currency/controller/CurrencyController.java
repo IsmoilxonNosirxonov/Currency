@@ -42,7 +42,7 @@ public class CurrencyController {
     @GetMapping("/get-currencies-by-page")
     public ResponseEntity<Page<CurrencyReadDto>> getByPage(@RequestParam(name = "page", defaultValue = "0") int page,
                                                            @RequestParam(name = "size", defaultValue = "10") int size) {
-        return ResponseEntity.ok(currencyService.getByPage(PageRequest.of(page,size)));
+        return ResponseEntity.ok(currencyService.getByPage(PageRequest.of(page, size)));
     }
 
     @GetMapping("/get-all-currencies")

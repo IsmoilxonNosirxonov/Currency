@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,15 +21,16 @@ import uz.in.currency.domain.role.UserRole;
 import uz.in.currency.repository.UserRepository;
 import uz.in.currency.mapper.MyMapper;
 import uz.in.currency.service.user.UserServiceImpl;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @DataJpaTest
 @RunWith(SpringRunner.class)
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class UserServiceImplH2Test {
+public class UserServiceImplJunitTestV2 {
 
     @Autowired
     private UserRepository userRepository;
@@ -47,19 +47,19 @@ public class UserServiceImplH2Test {
     private UserServiceImpl userService;
 
     @Before
-    public void setUp(){
-        userService=new UserServiceImpl(userRepository,passwordEncoder,jwtService,authenticationManager);
+    public void setUp() {
+        userService = new UserServiceImpl(userRepository, passwordEncoder, jwtService, authenticationManager);
     }
 
     @Test
-    public void testSave(){
-        UserCreateDto userCreateDto= UserCreateDto.builder()
+    public void testSave() {
+        UserCreateDto userCreateDto = UserCreateDto.builder()
                 .fullName("Test")
                 .email("test@gmail.com")
                 .password("test")
                 .role(UserRole.USER)
                 .build();
-        User user=User.builder()
+        User user = User.builder()
                 .id(UUID.randomUUID())
                 .fullName("Test")
                 .email("test@gmail.com")
@@ -74,17 +74,17 @@ public class UserServiceImplH2Test {
         when(jwtService.generateToken(any(User.class))).thenReturn("token");
 
         AuthenticationResponse response = userService.save(userCreateDto);
-        Assert.assertEquals("token",response.getToken());
-        Assert.assertEquals(user.getFullName(),userRepository.findByEmail("test@gmail.com").get().getFullName());
+        Assert.assertEquals("token", response.getToken());
+        Assert.assertEquals(user.getFullName(), userRepository.findByEmail("test@gmail.com").get().getFullName());
     }
 
     @Test
-    public void testSignIn(){
-        SignInDto signInDto= SignInDto.builder()
+    public void testSignIn() {
+        SignInDto signInDto = SignInDto.builder()
                 .email("test2@gmail.com")
                 .password("test")
                 .build();
-        User user=User.builder()
+        User user = User.builder()
                 .fullName("Test2")
                 .email("test2@gmail.com")
                 .password("test2")
@@ -97,8 +97,8 @@ public class UserServiceImplH2Test {
         when(jwtService.generateToken(any(User.class))).thenReturn("jwtToken");
 
         AuthenticationResponse response = userService.signIn(signInDto);
-        Assert.assertEquals("jwtToken",response.getToken());
-        Assert.assertEquals(user.getFullName(),userRepository.findByEmail("test2@gmail.com").get().getFullName());
+        Assert.assertEquals("jwtToken", response.getToken());
+        Assert.assertEquals(user.getFullName(), userRepository.findByEmail("test2@gmail.com").get().getFullName());
     }
 
 }
