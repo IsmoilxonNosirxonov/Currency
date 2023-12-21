@@ -20,10 +20,8 @@ import uz.in.currency.domain.entity.Currency;
 import uz.in.currency.repository.CurrencyRepository;
 import uz.in.currency.feign.CurrencyFeignClient;
 import uz.in.currency.service.currency.CurrencyServiceImpl;
-
 import java.util.List;
 import java.util.Objects;
-
 import static org.mockito.Mockito.when;
 
 @DataJpaTest
