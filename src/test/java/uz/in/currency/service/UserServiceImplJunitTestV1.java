@@ -19,12 +19,14 @@ import uz.in.currency.domain.response.AuthenticationResponse;
 import uz.in.currency.domain.role.UserRole;
 import uz.in.currency.repository.UserRepository;
 import uz.in.currency.service.user.UserServiceImpl;
+
 import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class UserServiceImplJunitTest {
+class UserServiceImplJunitTestV1 {
 
     @Mock
     private UserRepository userRepository;
@@ -43,7 +45,7 @@ class UserServiceImplJunitTest {
 
     @Test
     public void testSave() {
-        UserCreateDto userCreateDto = new UserCreateDto("Test","test@example.com", "password", UserRole.USER);
+        UserCreateDto userCreateDto = new UserCreateDto("Test", "test@example.com", "password", UserRole.USER);
         when(userRepository.findByEmail(userCreateDto.getEmail())).thenReturn(Optional.empty());
         when(passwordEncoder.encode(userCreateDto.getPassword())).thenReturn("encodedPassword");
         when(userRepository.save(any(User.class))).thenReturn(new User());
@@ -55,7 +57,7 @@ class UserServiceImplJunitTest {
 
     @Test
     public void testSaveDuplicateValue() {
-        UserCreateDto userCreateDto = new UserCreateDto("Test","test@example.com", "password", UserRole.USER);
+        UserCreateDto userCreateDto = new UserCreateDto("Test", "test@example.com", "password", UserRole.USER);
         when(userRepository.findByEmail(userCreateDto.getEmail())).thenReturn(Optional.of(new User()));
 
         assertThrows(DublicateValueException.class, () -> userService.save(userCreateDto));
@@ -71,7 +73,7 @@ class UserServiceImplJunitTest {
         AuthenticationResponse authenticationResponse = userService.signIn(signInDto);
 
         assertNotNull(authenticationResponse);
-        assertEquals("jwtToken",authenticationResponse.getToken());
+        assertEquals("jwtToken", authenticationResponse.getToken());
     }
 
     @Test

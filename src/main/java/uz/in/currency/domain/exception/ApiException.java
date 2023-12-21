@@ -1,6 +1,7 @@
 package uz.in.currency.domain.exception;
 
 import org.springframework.http.HttpStatus;
+
 import java.time.ZonedDateTime;
 
 public class ApiException {

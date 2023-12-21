@@ -16,7 +16,7 @@ public class Currency {
     @Id
     private Long id; //tartib raqami
 
-    @Column(unique = true,nullable = false)
+    @Column(unique = true, nullable = false)
     private String code; //valyutaning sonli kodi
 
     private String ccy; //valyutaning ramzli kodi

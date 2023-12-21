@@ -12,7 +12,9 @@ import uz.in.currency.domain.dto.CurrencyReadDto;
 import uz.in.currency.domain.exception.CurrencyNotSaveException;
 import uz.in.currency.domain.exception.DataNotFoundException;
 import uz.in.currency.service.currency.CurrencyService;
+
 import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -24,13 +26,13 @@ public class CurrencyControllerApiTest {
     private CurrencyController currencyController;
 
     @BeforeEach
-    void setUp(){
-        currencyService= Mockito.mock(CurrencyService.class);
-        currencyController=new CurrencyController(currencyService);
+    void setUp() {
+        currencyService = Mockito.mock(CurrencyService.class);
+        currencyController = new CurrencyController(currencyService);
     }
 
     @Test
-    public void saveByResTemplatePositiveTest1(){
+    public void saveByResTemplatePositiveTest1() {
         when(currencyService.saveByResTemplate()).thenReturn("Success");
 
         ResponseEntity<String> responseEntity = currencyController.saveByResTemplate();
@@ -40,7 +42,7 @@ public class CurrencyControllerApiTest {
     }
 
     @Test
-    public void saveByResTemplateNegativeTest1(){
+    public void saveByResTemplateNegativeTest1() {
         when(currencyService.saveByResTemplate()).thenThrow(CurrencyNotSaveException.class);
 
         currencyController.saveByResTemplate();
@@ -49,7 +51,7 @@ public class CurrencyControllerApiTest {
     }
 
     @Test
-    public void saveByOpenFeignPositiveTest1(){
+    public void saveByOpenFeignPositiveTest1() {
         when(currencyService.saveByOpenFeign()).thenReturn("Success");
 
         ResponseEntity<String> responseEntity = currencyController.saveByOpenFeign();
@@ -59,7 +61,7 @@ public class CurrencyControllerApiTest {
     }
 
     @Test
-    public void saveByOpenFeignNegativeTest1(){
+    public void saveByOpenFeignNegativeTest1() {
         when(currencyService.saveByOpenFeign()).thenThrow(CurrencyNotSaveException.class);
 
         ResponseEntity<String> responseEntity = currencyController.saveByOpenFeign();
@@ -68,19 +70,19 @@ public class CurrencyControllerApiTest {
     }
 
     @Test
-    public void getByCodePositiveTest1(){
-        CurrencyReadDto currencyReadDto=new CurrencyReadDto();
+    public void getByCodePositiveTest1() {
+        CurrencyReadDto currencyReadDto = new CurrencyReadDto();
 
         when(currencyService.getByCode(anyString())).thenReturn(currencyReadDto);
 
         ResponseEntity<CurrencyReadDto> responseEntity = currencyController.getByCode("840");
 
-        assertEquals(HttpStatus.OK,responseEntity.getStatusCode());
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertNotNull(responseEntity.getBody());
     }
 
     @Test
-    public void getByCodeNegativeTest1(){
+    public void getByCodeNegativeTest1() {
 
         when(currencyService.getByCode(anyString())).thenThrow(DataNotFoundException.class);
 
@@ -88,7 +90,7 @@ public class CurrencyControllerApiTest {
     }
 
     @Test
-    public void getByCodeNegativeTest2(){
+    public void getByCodeNegativeTest2() {
 
         when(currencyService.getByCode(null)).thenThrow(IllegalArgumentException.class);
 
@@ -96,26 +98,26 @@ public class CurrencyControllerApiTest {
     }
 
     @Test
-    public void getByCcyPositiveTest1(){
-        CurrencyReadDto currencyReadDto=new CurrencyReadDto();
+    public void getByCcyPositiveTest1() {
+        CurrencyReadDto currencyReadDto = new CurrencyReadDto();
 
         when(currencyService.getByCode(anyString())).thenReturn(currencyReadDto);
 
         ResponseEntity<CurrencyReadDto> responseEntity = currencyController.getByCode("USD");
 
-        assertEquals(HttpStatus.OK,responseEntity.getStatusCode());
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertNotNull(responseEntity.getBody());
     }
 
     @Test
-    public void getByCcyNegativeTest1(){
+    public void getByCcyNegativeTest1() {
         when(currencyService.getByCode(anyString())).thenThrow(DataNotFoundException.class);
 
         assertThrows(DataNotFoundException.class, () -> currencyController.getByCode("USD"));
     }
 
     @Test
-    public void getByCcyNegativeTest2(){
+    public void getByCcyNegativeTest2() {
         when(currencyService.getByCode(null)).thenThrow(IllegalArgumentException.class);
 
         assertThrows(IllegalArgumentException.class, () -> currencyController.getByCode(null));
@@ -150,7 +152,7 @@ public class CurrencyControllerApiTest {
     }
 
     @Test
-    public void getAllPositiveTest1(){
+    public void getAllPositiveTest1() {
         List<CurrencyReadDto> mockedDtoList = List.of(new CurrencyReadDto());
         when(currencyService.getAll()).thenReturn(mockedDtoList);
 

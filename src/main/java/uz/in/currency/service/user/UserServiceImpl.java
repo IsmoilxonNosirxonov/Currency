@@ -19,13 +19,13 @@ import uz.in.currency.mapper.MyMapper;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
-    private static final Logger logger= LoggerFactory.getLogger(UserServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Override
     public AuthenticationResponse save(UserCreateDto userCreateDto) {
@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService{
             logger.info("Exiting save() method");
             return new AuthenticationResponse(jwtToken);
         } else {
-            String erorMessage="This email already exists: " + userCreateDto.getEmail();
+            String erorMessage = "This email already exists: " + userCreateDto.getEmail();
             logger.error(erorMessage);
             throw new DublicateValueException(erorMessage);
         }

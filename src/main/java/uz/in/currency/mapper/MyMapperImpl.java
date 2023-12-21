@@ -8,17 +8,18 @@ import uz.in.currency.domain.entity.Currency;
 import uz.in.currency.domain.dto.CurrencyCreateDto;
 import uz.in.currency.domain.entity.User;
 
-public class MyMapperImpl implements MyMapper{
+public class MyMapperImpl implements MyMapper {
 
-    private static final Logger logger= LoggerFactory.getLogger(MyMapperImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(MyMapperImpl.class);
+
     @Override
     public User userCreateDtoToUser(UserCreateDto userCreateDto) {
         logger.info("Entering userCreateDtotoCurrency() method");
-        if(userCreateDto == null){
+        if (userCreateDto == null) {
             logger.warn("Input UserCreateDto is null, exiting userCreateDtoToUser() method");
             return null;
         }
-        User user= User.builder()
+        User user = User.builder()
                 .fullName(userCreateDto.getFullName())
                 .email(userCreateDto.getEmail())
                 .password(userCreateDto.getPassword())
@@ -31,11 +32,11 @@ public class MyMapperImpl implements MyMapper{
     @Override
     public Currency currencyCreateDtoToCurrency(CurrencyCreateDto currencyCreateDto) {
         logger.info("Entering currencyCreateDtotoCurrency() method");
-        if(currencyCreateDto==null){
+        if (currencyCreateDto == null) {
             logger.warn("Input currencyCreateDto is null, exiting userCreateDtoToUser() method");
             return null;
         }
-        Currency currency= Currency.builder()
+        Currency currency = Currency.builder()
                 .id(currencyCreateDto.getId())
                 .code(currencyCreateDto.getCode())
                 .ccy(currencyCreateDto.getCcy())
@@ -55,11 +56,11 @@ public class MyMapperImpl implements MyMapper{
     @Override
     public CurrencyReadDto currencyToCurrencyReadDto(Currency currency) {
         logger.info("Entering currencytoCurrencyReadDto() method");
-        if(currency==null){
+        if (currency == null) {
             logger.warn("Input currency is null, exiting currencytoCurrencyReadDto() method");
             return null;
         }
-        CurrencyReadDto currencyReadDto= CurrencyReadDto.builder()
+        CurrencyReadDto currencyReadDto = CurrencyReadDto.builder()
                 .code(currency.getCode())
                 .ccy(currency.getCcy())
                 .ccyNm_RU(currency.getCcyNm_RU())

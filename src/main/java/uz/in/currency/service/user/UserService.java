@@ -8,6 +8,7 @@ import uz.in.currency.domain.response.AuthenticationResponse;
 @Service
 public interface UserService {
     AuthenticationResponse save(UserCreateDto userCreateDto);
+
     AuthenticationResponse signIn(SignInDto signInDto);
 
 }

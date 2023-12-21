@@ -13,14 +13,16 @@ import uz.in.currency.domain.entity.Currency;
 import uz.in.currency.domain.exception.DataNotFoundException;
 import uz.in.currency.repository.CurrencyRepository;
 import uz.in.currency.service.currency.CurrencyServiceImpl;
+
 import java.util.List;
 import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 
 @ExtendWith(MockitoExtension.class)
-class CurrencyServiceImplJunitTest {
+class CurrencyServiceImplJunitTestV1 {
 
     @Mock
     private CurrencyRepository currencyRepository;
@@ -47,11 +49,11 @@ class CurrencyServiceImplJunitTest {
     }
 
     @Test
-    public void testGetByCodeDataNotFound(){
+    public void testGetByCodeDataNotFound() {
 
         Mockito.when(currencyRepository.findByCode(anyString())).thenReturn(Optional.empty());
 
-        assertThrows(DataNotFoundException.class,()->currencyService.getByCode("940"));
+        assertThrows(DataNotFoundException.class, () -> currencyService.getByCode("940"));
     }
 
     @Test
@@ -64,11 +66,11 @@ class CurrencyServiceImplJunitTest {
     }
 
     @Test
-    public void testGetByCcyDataNotFound(){
+    public void testGetByCcyDataNotFound() {
 
         Mockito.when(currencyRepository.findByCcy(anyString())).thenReturn(Optional.empty());
 
-        assertThrows(DataNotFoundException.class,()->currencyService.getByCcy("EUR"));
+        assertThrows(DataNotFoundException.class, () -> currencyService.getByCcy("EUR"));
     }
 
     @Test
@@ -77,7 +79,7 @@ class CurrencyServiceImplJunitTest {
         PageRequest pageable = PageRequest.of(0, 10);
         Page mockPage = Mockito.mock(Page.class);
         Mockito.when(currencyRepository.findAll(pageable)).thenReturn((Page) mockPage);
-        Mockito.when(mockPage.map(Mockito.any())).thenReturn((Page<CurrencyReadDto>)mockPage);
+        Mockito.when(mockPage.map(Mockito.any())).thenReturn((Page<CurrencyReadDto>) mockPage);
 
         Page<CurrencyReadDto> result = currencyService.getByPage(pageable);
         assertNotNull(result);

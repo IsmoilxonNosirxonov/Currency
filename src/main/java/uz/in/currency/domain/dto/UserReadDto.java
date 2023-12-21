@@ -2,6 +2,7 @@ package uz.in.currency.domain.dto;
 
 import lombok.*;
 import uz.in.currency.domain.role.UserRole;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
