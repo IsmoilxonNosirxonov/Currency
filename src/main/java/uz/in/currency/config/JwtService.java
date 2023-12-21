@@ -7,7 +7,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import uz.in.currency.domain.entity.User;
+import uz.in.currency.entity.User;
 
 import java.security.Key;
 import java.util.Date;
@@ -30,7 +30,7 @@ public class JwtService {
 
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("role", ((User) userDetails).getRole());
+        claims.put("ROLE_", ((User) userDetails).getRole());
         return generateToken(claims, userDetails);
     }
 
@@ -75,3 +75,4 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }
+

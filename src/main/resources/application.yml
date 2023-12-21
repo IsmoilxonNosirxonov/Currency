@@ -1,0 +1,45 @@
+server:
+  port: 8083
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/Currency
+    username: postgres
+    password: 7703
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+  main:
+      allow-bean-definition-overriding: true
+
+currency:
+  ccy-codes:
+    AED: 784
+    AUD: 036
+    CAD: 124
+    CHF: 756
+    CNY: 156
+    DKK: 208
+    EGP: 818
+    EUR: 978
+    GBP: 826
+    ISK: 352
+    JPY: 392
+    KRW: 410
+    KWD: 414
+    KZT: 398
+    LBP: 422
+    MYR: 458
+    NOK: 578
+    PLN: 985
+    RUB: 643
+    SEK: 752
+    SGD: 702
+    TRY: 949
+    UAH: 980
+    USD: 840
