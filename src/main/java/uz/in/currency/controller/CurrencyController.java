@@ -18,34 +18,34 @@ public class CurrencyController {
     private final CurrencyService currencyService;
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping("/save-all-currencies-by-rest-template/{bankName}")
+    @GetMapping("/save-by-rest/{bankName}")
     public ResponseEntity<List<?>> saveByResTemplate(@PathVariable String bankName) {
         return ResponseEntity.ok(currencyService.saveByResTemplate(bankName));
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping("/save-all-currencies-by-open-feign/{bankName}")
+    @GetMapping("/save-by-feign/{bankName}")
     public ResponseEntity<List<?>> saveByOpenFeign(@PathVariable String bankName) {
         return ResponseEntity.ok(currencyService.saveByOpenFeign(bankName));
     }
 
-    @GetMapping("/get-currency-by-code/{code}")
+    @GetMapping("/get-by-code/{code}")
     public ResponseEntity<StandartCurrencyDTO> getByCode(@PathVariable Integer code) {
         return ResponseEntity.ok(currencyService.getByCode(code));
     }
 
-    @GetMapping("/get-currency-by-ccy/{ccy}")
+    @GetMapping("/get-by-ccy/{ccy}")
     public ResponseEntity<StandartCurrencyDTO> getByCcy(@PathVariable String ccy) {
         return ResponseEntity.ok(currencyService.getByCcy(ccy));
     }
 
-    @GetMapping("/get-currencies-by-page")
+    @GetMapping("/get-by-page")
     public ResponseEntity<Page<StandartCurrencyDTO>> getByPage(@RequestParam(name = "page", defaultValue = "0") int page,
                                                                @RequestParam(name = "size", defaultValue = "10") int size) {
         return ResponseEntity.ok(currencyService.getByPage(PageRequest.of(page,size)));
     }
 
-    @GetMapping("/get-all-currencies")
+    @GetMapping("/get-all")
     public ResponseEntity<List<?>> getAll() {
         return ResponseEntity.ok(currencyService.getAll());
     }
