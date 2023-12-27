@@ -6,7 +6,5 @@ import uz.in.currency.entity.User;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
-
-    User userDtoToUser(UserDTO userDto);
-
+    User toUser(UserDTO userDto);
 }

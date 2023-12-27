@@ -8,10 +8,14 @@ import org.springframework.http.ResponseEntity;
 import uz.in.currency.dto.SignInDTO;
 import uz.in.currency.dto.TokenDTO;
 import uz.in.currency.dto.UserDTO;
-import uz.in.currency.exception.DataNotFoundException;
-import uz.in.currency.exception.DublicateValueException;
-import uz.in.currency.role.UserRole;
+import uz.in.currency.entity.User;
+import uz.in.currency.enumeration.UserRole;
+import uz.in.currency.exception.CommonException;
 import uz.in.currency.service.UserService;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -30,11 +34,11 @@ public class UserControllerApiTest {
     @Test
     public void signUpPositiveTest1(){
         UserDTO userCreateDto = new UserDTO("Test","test@example.com", "test", UserRole.USER);
-        TokenDTO response = new TokenDTO("Test");
+        User user=new User(UUID.randomUUID(),"Test","test@example.com", "test", UserRole.USER, LocalDateTime.now(),LocalDateTime.now());
 
-        when(userService.save(any(UserDTO.class))).thenReturn(response);
+        when(userService.save(any(UserDTO.class))).thenReturn(user);
 
-        ResponseEntity<TokenDTO> responseEntity=userController.signUp(userCreateDto);
+        ResponseEntity<User> responseEntity = userController.signUp(userCreateDto);
 
         assertEquals(HttpStatus.OK,responseEntity.getStatusCode());
         assertNotNull(responseEntity.getBody());
@@ -44,23 +48,22 @@ public class UserControllerApiTest {
     public void signUpNegativeTest1(){
         UserDTO userCreateDto = new UserDTO("Test","test@example.com", "test", UserRole.USER);
 
-        when(userService.save(any(UserDTO.class))).thenThrow(DublicateValueException.class);
+        when(userService.save(any(UserDTO.class))).thenThrow(CommonException.class);
 
-        assertThrows(DublicateValueException.class, ()->userController.signUp(userCreateDto));
+        assertThrows(CommonException.class, ()->userController.signUp(userCreateDto));
     }
 
     @Test
     public void signUpPositiveTest2(){
         UserDTO userCreateDto = new UserDTO("Test","test@example.com", "test", UserRole.USER);
-        TokenDTO response = new TokenDTO("validToken");
+        User user=new User(UUID.randomUUID(),"Test","test@example.com", "test", UserRole.USER, LocalDateTime.now(),LocalDateTime.now());
 
-        when(userService.save(any(UserDTO.class))).thenReturn(response);
+        when(userService.save(any(UserDTO.class))).thenReturn(user);
 
-        ResponseEntity<TokenDTO> responseEntity=userController.signUp(userCreateDto);
+        ResponseEntity<User> responseEntity = userController.signUp(userCreateDto);
 
         assertEquals(HttpStatus.OK,responseEntity.getStatusCode());
         assertNotNull(responseEntity.getBody());
-        assertEquals("validToken", responseEntity.getBody().getToken());
     }
 
     @Test
@@ -88,9 +91,9 @@ public class UserControllerApiTest {
     @Test
     void signInNegativeTest1() {
         SignInDTO signInDto = new SignInDTO("test@example.com", "test");
-        Mockito.when(userService.signIn(any(SignInDTO.class))).thenThrow(DataNotFoundException.class);
+        Mockito.when(userService.signIn(any(SignInDTO.class))).thenThrow(CommonException.class);
 
-        assertThrows(DataNotFoundException.class, () -> userController.signIn(signInDto));
+        assertThrows(CommonException.class, () -> userController.signIn(signInDto));
     }
 
     @Test

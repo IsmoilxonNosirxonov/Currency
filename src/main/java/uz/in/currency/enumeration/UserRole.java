@@ -1,4 +1,4 @@
-package uz.in.currency.role;
+package uz.in.currency.enumeration;
 
 public enum UserRole {
     USER,

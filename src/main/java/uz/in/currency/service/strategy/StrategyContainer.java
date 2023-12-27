@@ -10,14 +10,16 @@ import java.util.Map;
 @Component
 public class StrategyContainer {
 
-    private final Map<String, CurrencyStrategy> currencyStrategyMap=new HashMap<>();
+    private final CurrencyStrategy unknownStrategy;
+    public final Map<String, CurrencyStrategy> currencyStrategyMap = new HashMap<>();
 
 
-    public StrategyContainer(List<CurrencyStrategy> currencyStrategies){
-        currencyStrategies.forEach((currencyStrategy -> currencyStrategyMap.put(currencyStrategy.getClass().getName(),currencyStrategy)));
+    public StrategyContainer(List<CurrencyStrategy> currencyStrategies) {
+        this.unknownStrategy = new UnknownStrategyService();
+        currencyStrategies.forEach((currencyStrategy -> currencyStrategyMap.put(currencyStrategy.strategyName(), currencyStrategy)));
     }
 
-    public CurrencyStrategy getStrategy(String strategyName){
-        return currencyStrategyMap.getOrDefault(strategyName,null);
+    public CurrencyStrategy getStrategy(String strategyName) {
+        return currencyStrategyMap.getOrDefault(strategyName, unknownStrategy);
     }
 }

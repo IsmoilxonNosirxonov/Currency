@@ -3,11 +3,13 @@ package uz.in.currency.entity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.*;
+
 import java.time.LocalDate;
 
 @Getter
 @Setter
 @Builder
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "currencies")

@@ -3,12 +3,13 @@ package uz.in.currency.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
-@EqualsAndHashCode(callSuper = true)
+
 @Data
-@Builder
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class CurrencyDTOFromCBU extends StandartCurrencyDTO{
+@EqualsAndHashCode(callSuper = true)
+public class CurrencyDTOFromCBU extends StandardCurrencyDTO {
 
     @JsonProperty("id")
     private Long id;
