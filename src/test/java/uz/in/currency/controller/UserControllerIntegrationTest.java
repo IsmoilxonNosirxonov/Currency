@@ -2,7 +2,7 @@ package uz.in.currency.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,13 +11,12 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import uz.in.currency.domain.dto.SignInDto;
-import uz.in.currency.domain.dto.UserCreateDto;
-import uz.in.currency.domain.exception.DublicateValueException;
-import uz.in.currency.domain.response.AuthenticationResponse;
-import uz.in.currency.domain.role.UserRole;
-import uz.in.currency.service.user.UserService;
-
+import uz.in.currency.dto.SignInDTO;
+import uz.in.currency.dto.TokenDTO;
+import uz.in.currency.dto.UserDTO;
+import uz.in.currency.exception.DublicateValueException;
+import uz.in.currency.role.UserRole;
+import uz.in.currency.service.UserService;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
@@ -34,9 +33,9 @@ public class UserControllerIntegrationTest {
 
     @Test
     public void successfullyTestSignUp() throws Exception {
-        UserCreateDto createDto = new UserCreateDto("Test", "test@example.com", "password", UserRole.USER);
+        UserDTO createDto =new UserDTO("Test", "test@example.com", "password", UserRole.USER);
 
-        String contentAsString = mockMvc.perform(MockMvcRequestBuilders.post("http://localhost:8083/api/v1/auth/sign-up")
+        String contentAsString = mockMvc.perform(MockMvcRequestBuilders.post("http://localhost:8083/api/auth/sign-up")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createDto))
                 )
@@ -48,20 +47,19 @@ public class UserControllerIntegrationTest {
                 .getContentAsString();
 
         assertNotNull(contentAsString);
-        var response = objectMapper.readValue(contentAsString, new TypeReference<AuthenticationResponse>() {
-        });
+        var response = objectMapper.readValue(contentAsString, new TypeReference<TokenDTO>() {});
 
         assertNotNull(response);
 
-        System.out.println("Result: " + objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(response));
+        System.out.println("Result: "+objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(response));
     }
 
     @Test
     public void failedTestSignUp() throws Exception {
-        UserCreateDto createDto = new UserCreateDto("Test", "test@example.com", "password", UserRole.USER);
+        UserDTO createDto =new UserDTO("Test", "test@example.com", "password", UserRole.USER);
         userService.save(createDto);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/auth/sign-up")
+        mockMvc.perform(MockMvcRequestBuilders.post("http://localhost:8083/api/auth/sign-up")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createDto))
                 )
@@ -70,18 +68,18 @@ public class UserControllerIntegrationTest {
                     assertNotNull(exceptionResult);
                     assertInstanceOf(DublicateValueException.class, exceptionResult.getResolvedException());
                     DublicateValueException resolvedException = (DublicateValueException) exceptionResult.getResolvedException();
-                    assertEquals("This email already exists: " + createDto.getEmail(), resolvedException.getMessage());
+                    assertEquals("This email already exists: " + createDto.getEmail(),resolvedException.getMessage());
                 })
                 .andDo(print());
     }
 
     @Test
     public void successfullyTestSignIn() throws Exception {
-        SignInDto signInDto = new SignInDto("test@gmail.com", "test");
-        UserCreateDto createDto = new UserCreateDto("Test", "test@gmail.com", "test", UserRole.USER);
+        SignInDTO signInDto=new SignInDTO("test@gmail.com", "test");
+        UserDTO createDto =new UserDTO("Test", "test@gmail.com", "test", UserRole.USER);
         userService.save(createDto);
 
-        String contentAsString = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/auth/sign-in")
+        String contentAsString = mockMvc.perform(MockMvcRequestBuilders.post("http://localhost:8083/api/auth/sign-in")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(signInDto))
                 )
@@ -94,19 +92,18 @@ public class UserControllerIntegrationTest {
 
         assertNotNull(contentAsString);
 
-        var response = objectMapper.readValue(contentAsString, new TypeReference<AuthenticationResponse>() {
-        });
+        var response = objectMapper.readValue(contentAsString, new TypeReference<TokenDTO>() {});
 
         assertNotNull(response);
 
-        System.out.println("Result: " + objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(response));
+        System.out.println("Result: "+objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(response));
     }
 
     @Test
     public void failedTestSignIn() throws Exception {
-        SignInDto signInDto = new SignInDto("test@gmail.com", "test");
+        SignInDTO signInDto=new SignInDTO("test2@gmail.com", "test2");
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/auth/sign-in")
+        mockMvc.perform(MockMvcRequestBuilders.post("http://localhost:8083/api/auth/sign-in")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(signInDto))
                 )
@@ -115,7 +112,7 @@ public class UserControllerIntegrationTest {
                     assertNotNull(exceptionResult);
                     assertInstanceOf(BadCredentialsException.class, exceptionResult.getResolvedException());
                     BadCredentialsException resolvedException = (BadCredentialsException) exceptionResult.getResolvedException();
-                    assertEquals("Bad credentials", resolvedException.getMessage());
+                    assertEquals("Bad credentials",resolvedException.getMessage());
                 })
                 .andDo(print());
 
