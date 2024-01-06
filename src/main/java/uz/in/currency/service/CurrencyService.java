@@ -3,21 +3,22 @@ package uz.in.currency.service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import uz.in.currency.dto.StandartCurrencyDTO;
+import uz.in.currency.dto.StandardCurrencyDTO;
+
 import java.util.List;
 
 
 @Service
 public interface CurrencyService {
-    List<StandartCurrencyDTO> saveByResTemplate(String bankName);
+    List<StandardCurrencyDTO> saveByResTemplate(String bankName);
 
-    List<StandartCurrencyDTO> saveByOpenFeign(String bankName);
+    List<StandardCurrencyDTO> saveByOpenFeign(String bankName);
 
-    StandartCurrencyDTO getByCode(Integer code);
+    StandardCurrencyDTO getByCode(Long code);
 
-    StandartCurrencyDTO getByCcy(String ccy);
+    StandardCurrencyDTO getByCcy(String ccy);
 
-    Page<StandartCurrencyDTO> getByPage(Pageable pageable);
+    Page<StandardCurrencyDTO> getByPage(Pageable pageable);
 
-    List<StandartCurrencyDTO> getAll();
+    List<StandardCurrencyDTO> getAll();
 }

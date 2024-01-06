@@ -60,4 +60,13 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(apiException, internalServerError);
     }
 
+    @ExceptionHandler(value = {CommonException.class})
+    public ResponseEntity<String> handleCommonException(CommonException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(value = {RuntimeException.class})
+    public ResponseEntity<String> handleRuntimeException(RuntimeException e){
+        return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }

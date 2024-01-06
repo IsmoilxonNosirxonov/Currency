@@ -1,7 +1,7 @@
 package uz.in.currency.config;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.mapstruct.factory.Mappers;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import uz.in.currency.mapper.UserMapper;
 import uz.in.currency.repository.UserRepository;
 
 @Configuration
@@ -44,5 +45,8 @@ public class ApplicationConfig {
         return new BCryptPasswordEncoder();
     }
 
-
+    @Bean
+    public UserMapper userMapper() {
+        return Mappers.getMapper(UserMapper.class);
+    }
 }

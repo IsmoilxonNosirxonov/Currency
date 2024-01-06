@@ -3,9 +3,9 @@ package uz.in.currency.dto;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-@Getter
-@Setter
+@Data
 @Builder
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class SignInDTO {
