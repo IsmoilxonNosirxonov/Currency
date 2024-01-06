@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
@@ -12,7 +13,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit4.SpringRunner;
 import uz.in.currency.config.ApplicationProperties;
-import uz.in.currency.dto.CurrencyDTOFromCBU;
 import uz.in.currency.dto.CurrencyDTOFromNBU;
 import uz.in.currency.dto.StandardCurrencyDTO;
 import uz.in.currency.entity.Currency;
@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @DataJpaTest
@@ -51,11 +50,15 @@ public class CurrencyServiceImplJunitTest {
     @MockBean
     private CurrencyStrategy currencyStrategy;
     private CurrencyServiceImpl currencyService;
+    @Value("${exchange.cbu.url}")
+    private String CBU_URL;
+    @Value("${exchange.nbu.url}")
+    private String NBU_URL;
 
     @Before
     public void setUp() {
-        CBUStrategyService cbuStrategyService = new CBUStrategyService(cbuFeignClient);
-        NBUStrategyService nbuStrategyService = new NBUStrategyService(applicationProperties, nbuFeignClient);
+        CBUStrategyService cbuStrategyService = new CBUStrategyService(cbuFeignClient, CBU_URL);
+        NBUStrategyService nbuStrategyService = new NBUStrategyService(applicationProperties, nbuFeignClient, NBU_URL);
         UnknownStrategyService unknownStrategyService = new UnknownStrategyService();
         List<CurrencyStrategy> currencyStrategies = List.of(cbuStrategyService, nbuStrategyService, unknownStrategyService);
 

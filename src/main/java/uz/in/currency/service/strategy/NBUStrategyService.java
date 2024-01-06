@@ -3,6 +3,7 @@ package uz.in.currency.service.strategy;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,8 @@ public class NBUStrategyService implements CurrencyStrategy {
     private static final Logger logger = LoggerFactory.getLogger(NBUStrategyService.class);
     private final ApplicationProperties applicationProperties;
     private final CurrencyFromNBUFeignClient feignClient;
-    private final String URL = "https://nbu.uz/uz/exchange-rates/json/";
+    @Value("${exchange.nbu.url}")
+    private final String URL;
 
     @Override
     public List<StandardCurrencyDTO> getCurrenciesUsingResTemplate() {

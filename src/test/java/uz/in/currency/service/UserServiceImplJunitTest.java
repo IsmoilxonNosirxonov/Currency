@@ -7,8 +7,6 @@ import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 import uz.in.currency.config.JwtService;
@@ -22,8 +20,6 @@ import uz.in.currency.repository.UserRepository;
 import uz.in.currency.enumeration.UserRole;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 @DataJpaTest
 @RunWith(SpringRunner.class)
@@ -65,7 +61,7 @@ public class UserServiceImplJunitTest {
 
         userRepository.save(user);
         CommonException commonException = assertThrows(CommonException.class, () -> userService.save(userCreateDto));
-        assertEquals("This email already exists: test@gmail.com",commonException.getMessage());
+        assertEquals("This email already exists: test@gmail.com", commonException.getMessage());
     }
 
     @Test
@@ -86,7 +82,7 @@ public class UserServiceImplJunitTest {
         User user = User.builder().fullName("Test").email("test@gmail.com").password("").role(UserRole.USER).build();
 
         IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class, () -> userService.save(userCreateDto));
-        assertEquals("Password can not be null or empty",illegalArgumentException.getMessage());
+        assertEquals("Password can not be null or empty", illegalArgumentException.getMessage());
     }
 
     @Test
@@ -106,6 +102,6 @@ public class UserServiceImplJunitTest {
         SignInDTO signInDto = SignInDTO.builder().email("test2@gmail.com").password("test").build();
 
         CommonException commonException = assertThrows(CommonException.class, () -> userService.signIn(signInDto));
-        assertEquals("User not found this email: test2@gmail.com",commonException.getMessage());
+        assertEquals("User not found this email: test2@gmail.com", commonException.getMessage());
     }
 }

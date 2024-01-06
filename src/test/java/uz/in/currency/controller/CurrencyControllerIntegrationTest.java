@@ -11,21 +11,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import uz.in.currency.config.JwtService;
 import uz.in.currency.dto.StandardCurrencyDTO;
-import uz.in.currency.entity.Currency;
 import uz.in.currency.entity.User;
 import uz.in.currency.exception.CommonException;
 import uz.in.currency.repository.CurrencyRepository;
 import uz.in.currency.repository.UserRepository;
 import uz.in.currency.enumeration.UserRole;
 import uz.in.currency.service.CurrencyService;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -164,15 +160,7 @@ public class CurrencyControllerIntegrationTest {
     void successfullyTestGetByPage() throws Exception {
         currencyService.saveByOpenFeign("cbu");
 
-        String contentAsString = mockMvc.perform(MockMvcRequestBuilders.get("/api/get-by-page?page0&size=10")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", "Bearer " + jwtToken)
-                        )
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andDo(print())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
+        String contentAsString = mockMvc.perform(MockMvcRequestBuilders.get("/api/get-by-page?page0&size=10").contentType(MediaType.APPLICATION_JSON).header("Authorization", "Bearer " + jwtToken)).andExpect(MockMvcResultMatchers.status().isOk()).andDo(print()).andReturn().getResponse().getContentAsString();
 
         assertNotNull(contentAsString);
         var dtoPage = objectMapper.readValue(contentAsString, new TypeReference<Page<StandardCurrencyDTO>>() {

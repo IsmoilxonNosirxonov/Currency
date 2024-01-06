@@ -4,13 +4,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.client.RestTemplate;
 import uz.in.currency.dto.CurrencyDTOFromCBU;
 import uz.in.currency.dto.StandardCurrencyDTO;
 import uz.in.currency.exception.CommonException;
@@ -21,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @DataJpaTest
@@ -32,9 +27,12 @@ public class CBUStrategyServiceJunitTest {
     private CurrencyFromCBUFeignClient feignClient;
     private CBUStrategyService cbuStrategyService;
 
+    @Value("${exchange.cbu.url}")
+    private String URL;
+
     @Before
     public void setUp() {
-        cbuStrategyService = new CBUStrategyService(feignClient);
+        cbuStrategyService = new CBUStrategyService(feignClient, URL);
     }
 
     @Test
