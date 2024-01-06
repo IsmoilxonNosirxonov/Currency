@@ -27,7 +27,7 @@ public class CBUStrategyService implements CurrencyStrategy {
     private static final Logger logger = LoggerFactory.getLogger(CBUStrategyService.class);
     private final CurrencyFromCBUFeignClient feignClient;
     @Value("${exchange.cbu.url}")
-    private final String URL;
+    private String URL;
 
     @Override
     public List<StandardCurrencyDTO> getCurrenciesUsingResTemplate() {

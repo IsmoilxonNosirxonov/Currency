@@ -17,9 +17,10 @@ spring:
   main:
       allow-bean-definition-overriding: true
 
+secret:
+  key: 6C460F3BE0342BC7A968DDE410A571AEECC56BF4F90CB0786FFE8FC41D1D9093
+
 exchange:
-  secret:
-    key: 6C460F3BE0342BC7A968DDE410A571AEECC56BF4F90CB0786FFE8FC41D1D9093
   cbu:
     url: https://cbu.uz/uz/arkhiv-kursov-valyut/json/
   nbu:

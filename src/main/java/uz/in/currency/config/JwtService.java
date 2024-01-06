@@ -20,7 +20,7 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    @Value("${exchange.secret.key}")
+    @Value("${secret.key}")
     private String secretKey;
 
 
