@@ -3,6 +3,7 @@ package uz.in.currency.service.strategy;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,8 @@ public class NBUStrategyService implements CurrencyStrategy {
     private static final Logger logger = LoggerFactory.getLogger(NBUStrategyService.class);
     private final ApplicationProperties applicationProperties;
     private final CurrencyFromNBUFeignClient feignClient;
-    private final String URL = "https://nbu.uz/uz/exchange-rates/json/";
+    @Value("${exchange.nbu.url}")
+    private String URL;
 
     @Override
     public List<StandardCurrencyDTO> getCurrenciesUsingResTemplate() {
@@ -45,11 +47,9 @@ public class NBUStrategyService implements CurrencyStrategy {
                     new ParameterizedTypeReference<>() {}
             );
 
-            String exception = "";
             if (response.getBody() == null || response.getBody().isEmpty()) {
-                exception = "Response is null";
-                logger.warn(exception);
-                throw new CommonException(exception);
+                logger.warn("Response is null");
+                throw new CommonException("Response is null");
             }
 
             List<StandardCurrencyDTO> standardDTOList = new ArrayList<>(response.getBody());
@@ -69,11 +69,9 @@ public class NBUStrategyService implements CurrencyStrategy {
             logger.info("Request to get currency from NBU by Open Feign with url: {}", URL);
             List<CurrencyDTOFromNBU> nbuList = feignClient.getCurrencies();
 
-            String exception = "";
             if (nbuList == null || nbuList.isEmpty()) {
-                exception = "Response is null";
-                logger.warn(exception);
-                throw new CommonException(exception);
+                logger.warn("Response is null");
+                throw new CommonException("Response is null");
             }
 
             setCodeAndDate(new ArrayList<>(nbuList), ObjectMapperUtil.getCcyCodesFromJson());
